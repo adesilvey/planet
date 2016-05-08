@@ -127,7 +127,7 @@ public abstract class Surface extends SurfaceMap<AtmoCell> {
      * @param type The layer being added
      * @param amount The amount being added
      */
-    public void addToSurface(Layer type, float amount){
+    public void addToSurface(Layer type, int amount){
         for (int x = 0; x < worldSize; x++){
             for (int y = 0; y < worldSize; y++){
                 getCellAt(x, y).add(type, amount, true);

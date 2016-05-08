@@ -61,24 +61,24 @@ public abstract class Geosphere extends Surface {
 
     }
 
-    public void melt(GeoCell cell, float maxHeight) {
+    public void melt(GeoCell cell, int maxHeight) {
 
-        float height, diff, massToChange;
+        int height, diff, massToChange;
         Layer bottomType = cell.peekBottomStratum().getLayer();
 
         height = cell.getHeight();
 
         if (height > maxHeight) {
-            diff = (height - maxHeight) / 2f;
+            diff = (height - maxHeight) / 2;
             massToChange = calcMass(diff, Planet.self().getBase(), bottomType);
             cell.remove(massToChange, false, false);
         }
 
     }
 
-    public void formNewRock(GeoCell cell, float maxHeight) {
+    public void formNewRock(GeoCell cell, int maxHeight) {
 
-        float height, diff, massBeingDeposited;
+        int height, diff, massBeingDeposited;
         Layer depositType;
         GeoCell.SedimentBuffer eb = cell.getSedimentBuffer();
         
@@ -103,7 +103,7 @@ public abstract class Geosphere extends Surface {
         dust(spreadFrom);
 
         if (geoScale) {
-            float height = calcHeight(1, Planet.self().getBase(), SEDIMENT);
+            int height = calcHeight(1, Planet.self().getBase(), SEDIMENT);
             convertTopLayer(spreadFrom, height);
         }
 
@@ -116,9 +116,9 @@ public abstract class Geosphere extends Surface {
         }
     }
 
-    public void convertTopLayer(GeoCell spreadFrom, float height) {
+    public void convertTopLayer(GeoCell spreadFrom, int height) {
 
-        float rockMass, sandMass;
+        int rockMass, sandMass;
 
         if (spreadFrom.peekTopStratum() == null) {
             return;
@@ -179,15 +179,15 @@ public abstract class Geosphere extends Surface {
         GeoCell lowestGeoCell;
         GeoCell.SedimentBuffer eb = spreadFrom.getSedimentBuffer();
         GeoCell.SedimentBuffer lowestBuffer;
-        float spreadFromHeight, lowestHeight, diff, mass;
+        int spreadFromHeight, lowestHeight, diff, mass;
 
         if (lowestList.size() > 0) {
 
             lowestGeoCell = lowestList.get(rand.nextInt(lowestList.size()));
-            spreadFromHeight = spreadFrom.getHeightWithoutOceans() / 2.5f;
-            lowestHeight = lowestGeoCell.getHeightWithoutOceans() / 2.5f;
-
-            diff = (spreadFromHeight - lowestHeight) / 2.5f;
+            
+            spreadFromHeight = spreadFrom.getHeightWithoutOceans() / 2;
+            lowestHeight = lowestGeoCell.getHeightWithoutOceans() / 2;
+            diff = (spreadFromHeight - lowestHeight) / 2;
 
             diff = clamp(diff, -lowestHeight, spreadFromHeight);
 
@@ -216,13 +216,13 @@ public abstract class Geosphere extends Surface {
             GeoCell lowest = getLowestCellFrom(toUpdate);
 
             if (lowest != null && lowest != toUpdate) {
-                float currentCellHeight = toUpdate.getHeightWithoutOceans() / 2.5f;
-                float lowestHeight = lowest.getHeightWithoutOceans() / 2.5f;
-                float diff = (currentCellHeight - lowestHeight) / 2.5f;
+                int currentCellHeight = toUpdate.getHeightWithoutOceans() / 2;
+                int lowestHeight = lowest.getHeightWithoutOceans() / 2;
+                int diff = (currentCellHeight - lowestHeight) / 2;
 
                 diff = clamp(diff, -lowestHeight, currentCellHeight);
 
-                float mass = calcMass(diff, Planet.self().getBase(), LAVA);
+                int mass = calcMass(diff, Planet.self().getBase(), LAVA);
 
                 toUpdate.putMoltenRockToSurface(-mass);
                 lowest.putMoltenRockToSurface(mass);
@@ -232,7 +232,7 @@ public abstract class Geosphere extends Surface {
             float rate = ((HydroCell)toUpdate).getOceanMass() > 300 ? 0.95f : 0.10f;
 
             //solidify the rock
-            float massToSolidify = toUpdate.getMoltenRockFromSurface() * rate;
+            int massToSolidify = (int) (toUpdate.getMoltenRockFromSurface() * rate);
             toUpdate.putMoltenRockToSurface(-massToSolidify);
             massToSolidify = changeMass(massToSolidify, LAVA, BASALT);
             toUpdate.add(BASALT, massToSolidify, true);

@@ -4,9 +4,8 @@ import java.awt.Color;
 import java.util.List;
 import planet.Planet;
 import planet.util.TBuffer;
-import static planet.enums.Layer.OCEAN;
 import planet.util.Tools;
-
+import static planet.enums.Layer.OCEAN;
 /**
  * A HydroCell represents the hydrosphere of the planet. The class contains
  * information about the amount of water that exists on the surface of this
@@ -20,15 +19,13 @@ public class HydroCell extends GeoCell {
     public static int depthIndexRatio = 100000 / MAX_WATER_DEPTH_INDEX;
 
     public static int rainProb = 1000;
-    public static float rainScale = 2.5f;
+    public static int rainScale = 2;
     
     /**
      * The amount of water that will continue to hold any sediments. All
      * sediments are dumped if the ocean mass reaches this capacity.
      */
-    public static float oceanSedimentCapacity = 50;
-
-    public static float evapScale = 2.5f;
+    public static int oceanSedimentCapacity = 50;
 
     /**
      * The percentage of water that can dissolve sediments.
@@ -42,7 +39,7 @@ public class HydroCell extends GeoCell {
      */
     public final class WaterBuffer extends TBuffer {
 
-        private float mass;
+        private int mass;
         
         public WaterBuffer(){
             super();
@@ -53,7 +50,7 @@ public class HydroCell extends GeoCell {
             mass = 0;
         }
         
-        public void transferWater(float amount) {
+        public void transferWater(int amount) {
 
             if (!bufferSet()) {
                 bufferSet(true);
@@ -81,7 +78,9 @@ public class HydroCell extends GeoCell {
      * Buffer when moving sediments to other cells
      */
     public final class SuspendedSediments extends TBuffer {
-        private float sediments;
+        
+        private int sediments;
+        
         public SuspendedSediments(){
             super();
         }
@@ -91,7 +90,7 @@ public class HydroCell extends GeoCell {
             sediments = 0;
         }
        
-        public void transferSediment(float amount) {
+        public void transferSediment(int amount) {
             if (!bufferSet()) {
                 bufferSet(true);
             }
@@ -101,7 +100,7 @@ public class HydroCell extends GeoCell {
             }
         }
 
-        public float getSediments() {
+        public int getSediments() {
             return sediments;
         }
 
@@ -109,12 +108,12 @@ public class HydroCell extends GeoCell {
 
             if (bufferSet()) {
 
-                float cap = (getOceanMass() * sedimentCapacity);
+                int cap = (int) (getOceanMass() * sedimentCapacity);
                 SedimentBuffer eb = getSedimentBuffer();
                 if (getOceanMass() < oceanSedimentCapacity) {
 
                     if (sediments > cap) {
-                        float diff = sediments - cap;
+                        int diff = sediments - cap;
                         eb.updateSurfaceSedimentMass(diff);
                         sediments = cap;
                     }
@@ -137,7 +136,7 @@ public class HydroCell extends GeoCell {
     
     private WaterBuffer waterBuffer;
     private SuspendedSediments sedimentMap;
-    private float mass;
+    private int mass;
     
     public HydroCell(int x, int y) {
         super(x, y);
@@ -155,16 +154,16 @@ public class HydroCell extends GeoCell {
         return sedimentMap;
     }
     
-    public void addOceanMass(float m){
+    public void addOceanMass(int m){
         mass += m;
         if (mass < 0) mass = 0;
     }
     
-    public void setOceanMass(float m){
+    public void setOceanMass(int m){
         mass = m;
     }
     
-    public float getOceanMass() {
+    public int getOceanMass() {
         return mass;
     }
     
@@ -172,8 +171,8 @@ public class HydroCell extends GeoCell {
         return mass / OCEAN.getDensity();
     }
     
-    public float getOceanHeight() {
-        return getOceanVolume() / Planet.self().getBase();
+    public int getOceanHeight() {
+        return (int) (getOceanVolume() / Planet.self().getBase());
     }
     
     public List<Integer[]> render(List<Integer[]> settings) {

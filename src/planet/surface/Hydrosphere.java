@@ -7,7 +7,6 @@ import planet.cells.GeoCell;
 import planet.cells.HydroCell;
 
 import static planet.cells.HydroCell.MIN_ANGLE;
-import static planet.cells.HydroCell.evapScale;
 import static planet.cells.HydroCell.oceanSedimentCapacity;
 import static planet.cells.HydroCell.rainProb;
 import static planet.cells.HydroCell.rainScale;
@@ -32,7 +31,7 @@ public abstract class Hydrosphere extends Geosphere {
 
         HydroCell cellToUpdate, lowestCell;
         
-        float lowestHeight, curCellHeight, displacedMass,
+        int lowestHeight, curCellHeight, displacedMass,
                 diffGeoHeight, differenceHeight, totalMass;
 
         cellToUpdate = (HydroCell)getCellAt(x, y);
@@ -64,9 +63,9 @@ public abstract class Hydrosphere extends Geosphere {
             curCellHeight = cellToUpdate.getHeight();
 
             // Move the water
-            differenceHeight = (curCellHeight - lowestHeight) / 2.5f;
-            curCellHeight = cellToUpdate.getHeight() / 2.5f;
-            lowestHeight = lowestCell.getHeight() / 2.5f;
+            differenceHeight = (curCellHeight - lowestHeight) / 2;
+            curCellHeight = cellToUpdate.getHeight() / 2;
+            lowestHeight = lowestCell.getHeight() / 2;
 
             differenceHeight = clamp(differenceHeight, -lowestHeight, curCellHeight);
 
@@ -88,7 +87,7 @@ public abstract class Hydrosphere extends Geosphere {
                 angle = (float) Math.atan(diffGeoHeight / Planet.self().getSqrtBase());
                 slope = Math.max((float) Math.sin(angle), MIN_ANGLE);
 
-                totalMass = cellToUpdate.getOceanMass() * slope;
+                totalMass = (int) (cellToUpdate.getOceanMass() * slope);
 
                 if (sedimentBuffer.getSediments() <= 10) {
                     
@@ -99,14 +98,14 @@ public abstract class Hydrosphere extends Geosphere {
                 } else {
                     velocity = -sedimentBuffer.updateSurfaceSedimentMass(-totalMass);
                 }
-                lowestSSediments.transferSediment(velocity);
-                toUpdateSSediments.transferSediment(-velocity);
+                lowestSSediments.transferSediment((int)velocity);
+                toUpdateSSediments.transferSediment((int)-velocity);
             }
 
             // Only evaporate if in oceans. Will probably be removed later.
             else if (cellToUpdate.getOceanMass() > oceanSedimentCapacity) {
                 // Evaporate Water
-                toUpdateWaterBuffer.transferWater(-evapScale);
+//                toUpdateWaterBuffer.transferWater(-evapScale);
             }
         }
     }

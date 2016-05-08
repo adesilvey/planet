@@ -138,12 +138,12 @@ public class Tools {
      * @param base The base of the cell in square kilometers.
      * @return The calculated mass in kilograms
      */
-    public static float calcMass(float height, long base, Layer layerType){
+    public static int calcMass(int height, long base, Layer layerType){
         return calcMass(height, base, layerType.getDensity());
     }
     
-    public static float calcMass(float height, long base, float density){
-        return (height * base * density);
+    public static int calcMass(int height, long base, float density){
+        return (int) (height * base * density);
     }
     
     /**
@@ -154,31 +154,31 @@ public class Tools {
      * @param layerType The density of the mass in kilograms per cubic meter.
      * @return The height in kilometers.
      */
-    public static float calcHeight(float mass, long base, Layer layerType){
+    public static int calcHeight(int mass, long base, Layer layerType){
         return calcHeight(mass, base, layerType.getDensity());
     }
     
-    public static float calcHeight(float mass, long base, float density){
-        return mass / (base * density);
+    public static int calcHeight(int mass, long base, float density){
+        return (int) (mass / (base * density));
     }
     
-    public static float changeMass(float massToChange, Layer from, Layer to){
+    public static int changeMass(int massToChange, Layer from, Layer to){
         return changeMass(massToChange, from.getDensity(), to.getDensity());
     }
 
-    public static float changeMass(float massToChange, float fromDensity, float toDensity){
-        return (massToChange * fromDensity) / toDensity;
+    public static int changeMass(int massToChange, float fromDensity, float toDensity){
+        return (int) ((massToChange * fromDensity) / toDensity);
     }
     
-    public static float calcDepth(Layer layer, float gravity, float maxPressure){
-        return calcDepth(layer.getDensity(), gravity, maxPressure);
+    public static int calcDepth(Layer layer, float gravity, float maxPressure){
+        return (int) calcDepth(layer.getDensity(), gravity, maxPressure);
     }
     
-    public static float calcDepth(float density, float gravity, float maxPressure){
-        return (maxPressure / (gravity * density));
+    public static int calcDepth(float density, float gravity, float maxPressure){
+        return (int) (maxPressure / (gravity * density));
     }
     
-    public static float calcPressure(float density, float gravity, float depth){
+    public static float calcPressure(float density, float gravity, int depth){
         return depth * density * gravity;
     }
     
@@ -186,7 +186,7 @@ public class Tools {
         return 0.9f / (1 + (float)Math.exp(2*x - 4)) + 0.1f;
     }
     
-    public static float clamp(float heightDiff, float min, float max){
+    public static int clamp(int heightDiff, int min, int max){
         return (heightDiff < min) ? min : (heightDiff > max ? max : heightDiff);
     }
 

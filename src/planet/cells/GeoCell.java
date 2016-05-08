@@ -36,12 +36,12 @@ public class GeoCell extends Mantel {
         /**
          * Pending sediments to be added
          */
-        private float sediments;
+        private int sediments;
         
         /**
          * Represents the amount of sediments on the surface of this cell.
          */
-        private float totalSediments;
+        private int totalSediments;
         
         public SedimentBuffer(){
             super();
@@ -58,7 +58,7 @@ public class GeoCell extends Mantel {
          *
          * @param amount The amount to transfer in kilograms
          */
-        public void transferSediment(float amount) {
+        public void transferSediment(int amount) {
             if (!bufferSet()) {
                 bufferSet(true);
             }
@@ -87,10 +87,10 @@ public class GeoCell extends Mantel {
          * @param mass The amount of sediments in kilograms.
          * @return The amount that was removed or added
          */
-        public float updateSurfaceSedimentMass(float mass) {
+        public int updateSurfaceSedimentMass(int mass) {
             if (mass < 0) {
                 if ((totalSediments + mass) < 0) {
-                    float t = totalSediments;
+                    int t = totalSediments;
                     removeAllSediments();
                     return -t;
                 }
@@ -104,7 +104,7 @@ public class GeoCell extends Mantel {
          *
          * @return The amount of sediments from this cell in kilograms.
          */
-        public float getSediments() {
+        public int getSediments() {
             return totalSediments;
         }
 
@@ -117,7 +117,7 @@ public class GeoCell extends Mantel {
     private class PlateBuffer extends TBuffer {
         
         private Deque<Stratum> strata;
-        private float totalMass, totalVolume;
+        private int totalMass, totalVolume;
         
         public PlateBuffer(){
             super();
@@ -138,7 +138,7 @@ public class GeoCell extends Mantel {
     /**
      * The thickness of sediment layers to become visible on screen.
      */
-    public static float minSedimentThickness = 32;
+    public static int minSedimentThickness = 32;
     
     /**
      * The list of strata for this cell
@@ -163,7 +163,7 @@ public class GeoCell extends Mantel {
      * the totalMass is updated. 
      * The units are in kilograms. 
      */
-    private float totalMass;
+    private int totalMass;
     
     /**
      * The total volume is calculated each time stratum is added or
@@ -176,12 +176,12 @@ public class GeoCell extends Mantel {
      * Represents the amount of molten rock on the surface of
      * this cell. 
      */
-    private float moltenRockSurfaceMass;
+    private int moltenRockSurfaceMass;
     
     /**
      * The amount of this cell that is currently submerged in the mantel.
      */
-    private float curAmountSubmerged;
+    private int curAmountSubmerged;
     
     /**
      * The type of crust this cell is.
@@ -272,10 +272,10 @@ public class GeoCell extends Mantel {
      */
     public float getDensity() {
 
-        float oceanMass = ((HydroCell) this).getOceanMass();
+        int oceanMass = ((HydroCell) this).getOceanMass();
         float oceanVolume = oceanMass / OCEAN.getDensity();
         
-        float totalMassWithOceans = (totalMass + oceanMass);
+        int totalMassWithOceans = (totalMass + oceanMass);
         float totalVolumeWithOceans = (totalVolume + oceanVolume);
         
         if (totalVolumeWithOceans == 0){
@@ -298,7 +298,7 @@ public class GeoCell extends Mantel {
         return totalMass / totalVolume;
     }
     
-    public float getTotalMass(){
+    public int getTotalMass(){
         return totalMass;
     }
     
@@ -313,7 +313,7 @@ public class GeoCell extends Mantel {
      * volume of this cell is effected by this addition or subtraction.
      * @param mass The amount of molten rock being added.
      */
-    public void putMoltenRockToSurface(float mass){
+    public void putMoltenRockToSurface(int mass){
         moltenRockSurfaceMass += mass;
         updateMV(mass, LAVA);
     }
@@ -353,13 +353,13 @@ public class GeoCell extends Mantel {
      * @param fromTop If removing from the top.
      * @return The amount that was actually removed in kilograms.
      */
-    public float remove(float amount, boolean applyErosion, boolean fromTop) {
+    public int remove(int amount, boolean applyErosion, boolean fromTop) {
 
         float f = (1.0f - peekTopStratum().getLayer().getErosionFactor());
         amount *= (applyErosion) ? f : 1;
         
-        float removal = (amount > 0) ? -amount : amount;
-        float placedAmount = placeAmount(null, removal, fromTop);
+        int removal = (amount > 0) ? -amount : amount;
+        int placedAmount = placeAmount(null, removal, fromTop);
         
         return amount - placedAmount;
     }
@@ -373,8 +373,8 @@ public class GeoCell extends Mantel {
      * positive numbers. Units are in Kilograms.
      * @param toTop Adding to the top or not.
      */
-    public void add(Layer type, float amount, boolean toTop) {
-        float addition = (amount < 0) ? -amount : amount;
+    public void add(Layer type, int amount, boolean toTop) {
+        int addition = (amount < 0) ? -amount : amount;
         placeAmount(type, addition, toTop);
     }
     
@@ -397,7 +397,7 @@ public class GeoCell extends Mantel {
      * @return The amount (positive) that could not be removed due to the
      * stratum being less than the amount, otherwise 0 is returned.
      */
-    public float placeAmount(Layer type, float amount, boolean workOnTop) {
+    public int placeAmount(Layer type, int amount, boolean workOnTop) {
         
         Stratum selectedStratum = workOnTop ? peekTopStratum() : peekBottomStratum();
         
@@ -412,12 +412,11 @@ public class GeoCell extends Mantel {
         }
             
         Layer sType = selectedStratum.getLayer();
-        float mass = selectedStratum.getMass(), difference;
+        int mass = selectedStratum.getMass(), difference;
         
         if (amount < 0){ // Removing from the Stratum
             difference = mass + amount;// Take the difference (amount is negative)
             if (difference < 0){
-                difference = Math.max(-0.01f, difference);
                 if (verifyStratumMass(selectedStratum, workOnTop)){
                     addToStrata(null, amount - difference, workOnTop);
                 }
@@ -472,7 +471,7 @@ public class GeoCell extends Mantel {
      * @param type The layer type, null adds to any existing stratum at the top.
      * @param toTop Adding to the top or bottom of the strata.
      */
-    public void addToStrata(Layer type, float amount, boolean toTop){
+    public void addToStrata(Layer type, int amount, boolean toTop){
         
         Stratum stratum = toTop ? peekTopStratum() : peekBottomStratum();
         
@@ -503,7 +502,7 @@ public class GeoCell extends Mantel {
     private void updateMV(Stratum stratum, boolean subtract){
         
         Layer layer = stratum.getLayer();
-        float mass = subtract? -stratum.getMass() : stratum.getMass();
+        int mass = subtract? -stratum.getMass() : stratum.getMass();
         
         updateMV(mass, layer);
     }
@@ -514,7 +513,7 @@ public class GeoCell extends Mantel {
      * @param mass The amount of mass in kilograms being added or removed.
      * @param type The layer type of the mass, used to calculate volume.
      */
-    private void updateMV(float mass, Layer type) {
+    private void updateMV(int mass, Layer type) {
 
         totalMass += mass;
         totalVolume += mass / type.getDensity();
@@ -526,7 +525,7 @@ public class GeoCell extends Mantel {
      * @param type The layer type
      * @param amount The mass in kilograms
      */
-    public void pushStratum(Layer type, float amount){
+    public void pushStratum(Layer type, int amount){
         pushStratum(new Stratum(type, amount));
     }
     
@@ -551,7 +550,7 @@ public class GeoCell extends Mantel {
      * @param type The layer type
      * @param amount The mass in kilograms
      */
-    public void appendStratum(Layer type, float amount){
+    public void appendStratum(Layer type, int amount){
         appendStratum(new Stratum(type, amount));
     }
     
@@ -576,7 +575,7 @@ public class GeoCell extends Mantel {
      * @param amount The amount to be removed in kilograms
      * @return The amount that was actually removed.
      */
-    public float erode(float amount) {
+    public int erode(int amount) {
         
         Stratum top = peekTopStratum();
         if (top == null) return 0;
@@ -586,7 +585,7 @@ public class GeoCell extends Mantel {
 
         ref = (bottom == null) ? peekTopStratum().getLayer() : bottom.getLayer();
         
-        float changedMass = changeMass(amount, ref, SEDIMENT);
+        int changedMass = changeMass(amount, ref, SEDIMENT);
         
         return remove(changedMass, true, true);
     }
@@ -677,7 +676,7 @@ public class GeoCell extends Mantel {
      * of the ocean.
      * @return The height of this cell without ocean depth.
      */
-    public float getHeightWithoutOceans(){
+    public int getHeightWithoutOceans(){
         return hasOcean() ? (getHeight() - ((HydroCell) this).getOceanHeight()) : getHeight();
     }
     
@@ -687,12 +686,12 @@ public class GeoCell extends Mantel {
      * the height of this cell will be updated to it's equilibrium height.
      * @return The height of this cell with ocean depth included.
      */
-    public float getHeight(){
+    public int getHeight(){
         
-        float cellHeight;
+        int cellHeight;
         float oceanVolume = ((HydroCell) this).getOceanVolume();
         
-        cellHeight = (oceanVolume + totalVolume) / Planet.self().getBase();
+        cellHeight = (int) ((oceanVolume + totalVolume) / Planet.self().getBase());
         
         if (Planet.self().getTimeScale() == Planet.TimeScale.Geological) {
             recalculateHeight();
@@ -706,11 +705,12 @@ public class GeoCell extends Mantel {
      * Shifts the height of this cell to it's equilibrium height
      */
     public void recalculateHeight(){
-        float cellHeight, amountSubmerged, density = getDensity();
+        int cellHeight, amountSubmerged;
+        float density = getDensity();
         float oceanVolume = ((HydroCell) this).getOceanVolume();
         
-        cellHeight = (oceanVolume + totalVolume) / Planet.self().getBase();
-        amountSubmerged = cellHeight * (density / mantel_density);
+        cellHeight = (int) ((oceanVolume + totalVolume) / Planet.self().getBase());
+        amountSubmerged = (int) (cellHeight * (density / mantel_density));
 
         curAmountSubmerged = amountSubmerged;
     }
@@ -721,11 +721,12 @@ public class GeoCell extends Mantel {
      */
     public void updateHeight(){
         
-        float cellHeight, amountSubmerged, density = getDensity();
+        int cellHeight, amountSubmerged;
+        float density = getDensity();
         float oceanVolume = ((HydroCell) this).getOceanVolume();
         
-        cellHeight = (oceanVolume + totalVolume) / Planet.self().getBase();
-        amountSubmerged = cellHeight * (density / mantel_density);
+        cellHeight = (int) ((oceanVolume + totalVolume) / Planet.self().getBase());
+        amountSubmerged = (int) (cellHeight * (density / mantel_density));
 
         float diff = Math.abs(amountSubmerged - curAmountSubmerged);
         float change = diff / 2f;

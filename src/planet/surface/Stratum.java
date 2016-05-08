@@ -20,7 +20,7 @@ public class Stratum {
     /**
      * The mass of this layer in kilograms.
      */
-    private float mass;
+    private int mass;
     
     /**
      * The age of the stratum in years
@@ -40,7 +40,7 @@ public class Stratum {
         this.type = stratum.type;
     }
     
-    public Stratum(Layer type, float mass){
+    public Stratum(Layer type, int mass){
 
         this.mass = mass;
 
@@ -66,7 +66,7 @@ public class Stratum {
      * Returns the mass of this stratum in kilograms.
      * @return The mass of this stratum.
      */
-    public float getMass() {
+    public int getMass() {
         return mass;
     }
     
@@ -88,11 +88,11 @@ public class Stratum {
         return getVolume() / Planet.self().getBase();
     }
     
-    public void setMass(float m){
+    public void setMass(int m){
         mass = m;
     }
     
-    public void addToMass(float value){
+    public void addToMass(int value){
         this.mass += value;
         lastAdd = Planet.self().getSurface().getPlanetAge();
     }
